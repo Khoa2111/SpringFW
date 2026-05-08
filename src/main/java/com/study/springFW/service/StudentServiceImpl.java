@@ -44,7 +44,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public boolean deleteStudent(Long id) {   
         // repo.deleteById(id);
-        Optional<Student> st = getStudentById(id);
+        Optional<Student> st = repo.findById(id);
         if (st.isEmpty()) {
             return false;
         }
@@ -55,12 +55,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentSummaryResponse> findStudentsCreatedInLast7Day() {
-        return repo.findStudentsCreatedInLast7Day(LocalDateTime.now().minusDays(7));
+        return repo.findStudentsCreatedInLast7Day(LocalDateTime.now().minusDays(7)).stream().map(StudentMapper::toStudentSummaryResponse).toList();
     }
 
     @Override
     public List<StudentSummaryResponse> findStudentsWithGpaGreaterThanAverage() {
-        return repo.findStudentsWithGpaGreaterThanAverage();
+        return repo.findStudentsWithGpaGreaterThanAverage().stream().map(StudentMapper::toStudentSummaryResponse).toList();
     }
 
 
@@ -70,14 +70,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Optional<Student> getStudentById(Long id) {
-        return repo.findById(id);
+    public Optional<StudentSummaryResponse> getStudentById(Long id) {
+        return repo.findById(id).map(StudentMapper::toStudentSummaryResponse);
     }
 
     @Override
     public StudentSummaryResponse updateStudent(Long id, CreateStudentRequest request) {
         // lấy sv theo id để check tồn tại, nếu không có sẽ throw exception
-        Student existStudent = getStudentById(id).orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+        Student existStudent = repo.findById(id).orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
         // nếu trùng email thì cũng lỗi (ngoại trừ trường hợp email không đổi)
         if (repo.existsByEmail(request.getEmail()) && !existStudent.getEmail().equals(request.getEmail())) {
             throw new RuntimeException("Email already exist: " + request.getEmail());

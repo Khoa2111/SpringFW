@@ -41,7 +41,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     // Lấy sinh viên GPA > trung bình
     @Query("SELECT s FROM Student s WHERE s.gpa > (SELECT AVG(s2.gpa) FROM Student s2)")
-    List<StudentSummaryResponse> findStudentsWithGpaGreaterThanAverage();
+    List<Student> findStudentsWithGpaGreaterThanAverage();
 
     // Đếm số sinh viên active
     @Query("select count(s) from Student s where s.active = true")
@@ -49,6 +49,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     // Lấy sinh viên tạo trong 7 ngày gần nhất
     @Query("select s from Student s where s.createdAt >= :fromDate")
-    List<StudentSummaryResponse> findStudentsCreatedInLast7Day(@Param("fromDate") LocalDateTime fromDate);
+    List<Student> findStudentsCreatedInLast7Day(@Param("fromDate") LocalDateTime fromDate);
 
 }

@@ -23,7 +23,7 @@ public interface StudentService {
     List<StudentSummaryResponse> getAllStudents();
 
     // lấy sv theo id
-    Optional<Student> getStudentById(Long id);
+    Optional<StudentSummaryResponse> getStudentById(Long id);
 
     // update sv
     StudentSummaryResponse updateStudent(Long id, CreateStudentRequest request);
