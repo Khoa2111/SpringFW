@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.study.springFW.DTO.CreateStudentRequest;
 import com.study.springFW.DTO.StudentSummaryResponse;
+import com.study.springFW.DTO.UpdateStudentRequest;
+import com.study.springFW.DTO.StudentDetailResponse;
 import com.study.springFW.model.Student;
 import com.study.springFW.repository.StudentRepository;
 
@@ -17,16 +19,16 @@ import com.study.springFW.repository.StudentRepository;
 public interface StudentService {
 
     // tạo sv
-    StudentSummaryResponse createStudent(CreateStudentRequest request);
+    StudentDetailResponse createStudent(CreateStudentRequest request);
     
     // lấy all sv
     List<StudentSummaryResponse> getAllStudents();
 
     // lấy sv theo id
-    Optional<StudentSummaryResponse> getStudentById(Long id);
+    Optional<StudentDetailResponse> getStudentById(Long id);
 
     // update sv
-    StudentSummaryResponse updateStudent(Long id, CreateStudentRequest request);
+    StudentDetailResponse updateStudent(Long id, UpdateStudentRequest request);
 
     // delete sv
     boolean deleteStudent(Long id);

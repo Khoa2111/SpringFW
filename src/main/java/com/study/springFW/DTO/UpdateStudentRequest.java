@@ -6,12 +6,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
-public class CreateStudentRequest { // này để nhận dữ liệu khi tạo student
-
+public class UpdateStudentRequest {
+    
     @NotBlank
     private String name;
+
     @NotBlank @Email
     private String email;
     @Min(16) @Max(20)
@@ -21,10 +21,10 @@ public class CreateStudentRequest { // này để nhận dữ liệu khi tạo s
     private boolean active;
 
     //cons
-    public CreateStudentRequest() {
+    public UpdateStudentRequest() {
     }
 
-    public CreateStudentRequest(String name, String email, int age, double gpa, boolean active) {
+    public UpdateStudentRequest(String name, String email, int age, double gpa, boolean active) {
         this.name = name;
         this.email = email;
         this.age = age;
@@ -71,7 +71,5 @@ public class CreateStudentRequest { // này để nhận dữ liệu khi tạo s
     public void setActive(boolean active) {
         this.active = active;
     }
-   
-    
     
 }

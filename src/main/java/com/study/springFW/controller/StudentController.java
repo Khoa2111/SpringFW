@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.study.springFW.DTO.CreateStudentRequest;
+import com.study.springFW.DTO.StudentDetailResponse;
 import com.study.springFW.DTO.StudentSummaryResponse;
+import com.study.springFW.DTO.UpdateStudentRequest;
 import com.study.springFW.model.Student;
 import com.study.springFW.service.StudentService;
 import com.study.springFW.service.StudentServiceImpl;
@@ -41,7 +43,7 @@ public class StudentController {
     public ResponseEntity<?> createStudent(@RequestBody CreateStudentRequest st) {
            System.out.println("active = " + st.isActive());
         try {
-            StudentSummaryResponse savedStudent = service.createStudent(st);
+            StudentDetailResponse savedStudent = service.createStudent(st);
             URI uri = URI.create("/api/students/" + savedStudent.getId());
             return ResponseEntity.created(uri).body(savedStudent);
         } catch (RuntimeException e) {
@@ -60,7 +62,7 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable long id, @RequestBody CreateStudentRequest st) {
+    public ResponseEntity<?> updateStudent(@PathVariable long id, @RequestBody UpdateStudentRequest st) {
         try {
             return ResponseEntity.ok(service.updateStudent(id, st));
         } catch (RuntimeException e) {

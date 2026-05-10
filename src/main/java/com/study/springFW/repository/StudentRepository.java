@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.study.springFW.DTO.StudentSummaryResponse;
+import com.study.springFW.DTO.StudentDetailResponse;
 import com.study.springFW.model.Student;
 
 import java.time.LocalDateTime;

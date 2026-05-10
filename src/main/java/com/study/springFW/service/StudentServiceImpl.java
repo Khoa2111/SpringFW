@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.study.springFW.DTO.CreateStudentRequest;
-import com.study.springFW.DTO.StudentMapper;
+import com.study.springFW.DTO.StudentDetailResponse;
 import com.study.springFW.DTO.StudentSummaryResponse;
+import com.study.springFW.DTO.UpdateStudentRequest;
+import com.study.springFW.mapper.StudentMapper;
 import com.study.springFW.model.Student;
 import com.study.springFW.repository.StudentRepository;
 
@@ -17,10 +19,12 @@ import com.study.springFW.repository.StudentRepository;
 public class StudentServiceImpl implements StudentService {
     
     private final StudentRepository repo;
+    private final StudentMapper mapper;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository repo) {
+    public StudentServiceImpl(StudentRepository repo, StudentMapper mapper) {
         this.repo = repo;
+        this.mapper = mapper;
     }
 
     @Override
@@ -30,14 +34,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentSummaryResponse createStudent(CreateStudentRequest request) {
+    public StudentDetailResponse createStudent(CreateStudentRequest request) {
 
         // check email tồn tại chưa
         if (repo.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exist: " + request.getEmail());
         }
-        Student student = repo.save(StudentMapper.toStudent(request));
-        return StudentMapper.toStudentSummaryResponse(student);
+        Student student = repo.save(mapper.toStudent(request));
+        return mapper.toStudentDetailResponse(student);
     }
 
     // xóa luôn không cần check null, có lỗi thì để controller xử lý
@@ -55,27 +59,27 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentSummaryResponse> findStudentsCreatedInLast7Day() {
-        return repo.findStudentsCreatedInLast7Day(LocalDateTime.now().minusDays(7)).stream().map(StudentMapper::toStudentSummaryResponse).toList();
+        return mapper.toStudentSummaryResponses(repo.findStudentsCreatedInLast7Day(null));
     }
 
     @Override
     public List<StudentSummaryResponse> findStudentsWithGpaGreaterThanAverage() {
-        return repo.findStudentsWithGpaGreaterThanAverage().stream().map(StudentMapper::toStudentSummaryResponse).toList();
+        return mapper.toStudentSummaryResponses(repo.findStudentsWithGpaGreaterThanAverage());
     }
 
 
     @Override
     public List<StudentSummaryResponse> getAllStudents() {
-        return repo.findAll().stream().map(StudentMapper::toStudentSummaryResponse).toList();
+        return mapper.toStudentSummaryResponses(repo.findAll());
     }
 
     @Override
-    public Optional<StudentSummaryResponse> getStudentById(Long id) {
-        return repo.findById(id).map(StudentMapper::toStudentSummaryResponse);
+    public Optional<StudentDetailResponse> getStudentById(Long id) {
+        return repo.findById(id).map(mapper::toStudentDetailResponse);
     }
 
     @Override
-    public StudentSummaryResponse updateStudent(Long id, CreateStudentRequest request) {
+    public StudentDetailResponse updateStudent(Long id, UpdateStudentRequest request) {
         // lấy sv theo id để check tồn tại, nếu không có sẽ throw exception
         Student existStudent = repo.findById(id).orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
         // nếu trùng email thì cũng lỗi (ngoại trừ trường hợp email không đổi)
@@ -83,13 +87,9 @@ public class StudentServiceImpl implements StudentService {
             throw new RuntimeException("Email already exist: " + request.getEmail());
         }
 
-        // cập nhật thông tin sv
-        existStudent.setName(request.getName());
-        existStudent.setEmail(request.getEmail());
-        existStudent.setAge(request.getAge());
-        existStudent.setGpa(request.getGpa());
-        existStudent.setActive(request.isActive());
+        mapper.updateStudentFromRequest(request, existStudent);
 
-        return StudentMapper.toStudentSummaryResponse(repo.save(existStudent));
+        // cập nhật thông tin sv
+        return mapper.toStudentDetailResponse(repo.save(existStudent));
     }
 }
