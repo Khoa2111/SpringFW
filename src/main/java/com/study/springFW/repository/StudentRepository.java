@@ -1,11 +1,13 @@
 package com.study.springFW.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.study.springFW.DTO.StudentDetailResponse;
+import com.study.springFW.dto.StudentDetailResponse;
 import com.study.springFW.model.Student;
 
 import java.time.LocalDateTime;
@@ -34,14 +36,14 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findByGpaBetween(double minGpa, double maxGpa);
 
     // Tìm sinh viên theo name chứa keyword
-    List<Student> findByNameContaining(String keyword);
+    Page<Student> findByNameContaining(String keyword, Pageable pageable);
     
     // Lấy 3 sinh viên GPA cao nhất
     List<Student> findTop3ByOrderByGpaDesc();
 
     // Lấy sinh viên GPA > trung bình
     @Query("SELECT s FROM Student s WHERE s.gpa > (SELECT AVG(s2.gpa) FROM Student s2)")
-    List<Student> findStudentsWithGpaGreaterThanAverage();
+    Page<Student> findStudentsWithGpaGreaterThanAverage(Pageable pageable);
 
     // Đếm số sinh viên active
     @Query("select count(s) from Student s where s.active = true")
@@ -49,6 +51,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     // Lấy sinh viên tạo trong 7 ngày gần nhất
     @Query("select s from Student s where s.createdAt >= :fromDate")
-    List<Student> findStudentsCreatedInLast7Day(@Param("fromDate") LocalDateTime fromDate);
+    Page<Student> findStudentsCreatedInLast7Day(@Param("fromDate") LocalDateTime fromDate, Pageable pageable);
 
 }

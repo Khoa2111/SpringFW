@@ -1,30 +1,29 @@
-package com.study.springFW.DTO;
+package com.study.springFW.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class UpdateStudentRequest {
     
-    @NotBlank
+    @NotBlank(message = "Name must not be blank")
     private String name;
 
-    @NotBlank @Email
+    @NotBlank(message = "Email must not be blank") @Email(message = "Invalid email format")
     private String email;
-    @Min(16) @Max(20)
-    private int age;
-    @DecimalMax("4.0") @DecimalMin("0.0")
-    private double gpa;
-    private boolean active;
+    @Min(value = 16, message = "Age must be at least 16") 
+    private Integer age;
+    @DecimalMax(value = "4.0", message = "GPA must be between 0.0 and 4.0") @DecimalMin(value = "0.0", message = "GPA must be at least 0.0")
+    private Double gpa;
+    private Boolean active;
 
     //cons
     public UpdateStudentRequest() {
     }
 
-    public UpdateStudentRequest(String name, String email, int age, double gpa, boolean active) {
+    public UpdateStudentRequest(String name, String email, Integer age, Double gpa, Boolean active) {
         this.name = name;
         this.email = email;
         this.age = age;
@@ -48,27 +47,27 @@ public class UpdateStudentRequest {
         this.email = email;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
-    public double getGpa() {
+    public Double getGpa() {
         return gpa;
     }
 
-    public void setGpa(double gpa) {
+    public void setGpa(Double gpa) {
         this.gpa = gpa;
     }
 
-    public boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
     

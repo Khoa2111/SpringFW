@@ -1,13 +1,5 @@
-package com.study.springFW.DTO;
-
-import java.time.LocalDateTime;
-
+package com.study.springFW.dto;
 import com.study.springFW.model.Student;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.PrePersist;
 
 public class StudentDetailResponse  {   // này để show ra chi tiết cho detail
 
@@ -18,20 +10,13 @@ public class StudentDetailResponse  {   // này để show ra chi tiết cho det
     private double gpa;
     private boolean active;
     
+    // không cần cons, vì sẽ dùng mapstruct để map từ entity sang, nên chỉ cần getters và setters là đủ
 
-    //cons
-    public StudentDetailResponse () {
-    }
-    public StudentDetailResponse (Student student) {
-        this.id = student.getId();
-        this.name = student.getName();
-        this.email = student.getEmail();
-        this.age = student.getAge();
-        this.gpa = student.getGpa();
-        this.active = student.isActive();
-    }
     public Long getId() {
         return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
     public String getName() {
         return name;

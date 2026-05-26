@@ -1,44 +1,47 @@
 package com.study.springFW.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Service;
 
-import com.study.springFW.DTO.CreateStudentRequest;
-import com.study.springFW.DTO.StudentSummaryResponse;
-import com.study.springFW.DTO.UpdateStudentRequest;
-import com.study.springFW.DTO.StudentDetailResponse;
-import com.study.springFW.model.Student;
-import com.study.springFW.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-@Service
+import com.study.springFW.dto.CreateStudentRequest;
+import com.study.springFW.dto.PageResponse;
+import com.study.springFW.dto.StudentDetailResponse;
+import com.study.springFW.dto.StudentSummaryResponse;
+import com.study.springFW.dto.UpdateStudentRequest;
+
+
 public interface StudentService {
 
     // tạo sv
     StudentDetailResponse createStudent(CreateStudentRequest request);
     
     // lấy all sv
-    List<StudentSummaryResponse> getAllStudents();
+    PageResponse<StudentSummaryResponse> getAllStudents(Pageable pageable);
 
     // lấy sv theo id
-    Optional<StudentDetailResponse> getStudentById(Long id);
+    StudentDetailResponse getStudentById(Long id);
 
     // update sv
     StudentDetailResponse updateStudent(Long id, UpdateStudentRequest request);
 
     // delete sv
-    boolean deleteStudent(Long id);
+    void deleteStudent(Long id);
+
+    PageResponse<StudentSummaryResponse> findByNameContaining(String keywword, Pageable pageable);
 
     //JPQL
-    List<StudentSummaryResponse> findStudentsWithGpaGreaterThanAverage();
+    PageResponse<StudentSummaryResponse> findStudentsWithGpaGreaterThanAverage(Pageable pageable);
     
     long countActiveStudents();
 
-    List<StudentSummaryResponse> findStudentsCreatedInLast7Day();
+    PageResponse<StudentSummaryResponse> findStudentsCreatedInLast7Day(Pageable pageable);
 
+    // tìm sv có tên trong keyword
+    PageResponse<StudentSummaryResponse> searchStudentByName(String keyword, Pageable pageable);
+
+    PageResponse<StudentSummaryResponse> getTopStudentsByGpa(Pageable pageable);
 
 }

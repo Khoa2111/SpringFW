@@ -4,32 +4,39 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.springFW.DTO.CreateStudentRequest;
-import com.study.springFW.DTO.StudentDetailResponse;
-import com.study.springFW.DTO.StudentSummaryResponse;
-import com.study.springFW.DTO.UpdateStudentRequest;
-import com.study.springFW.model.Student;
+import com.study.springFW.dto.CreateStudentRequest;
+import com.study.springFW.dto.PageResponse;
+import com.study.springFW.dto.StudentDetailResponse;
+import com.study.springFW.dto.StudentSummaryResponse;
+import com.study.springFW.dto.UpdateStudentRequest;
 import com.study.springFW.service.StudentService;
-import com.study.springFW.service.StudentServiceImpl;
+
+import jakarta.validation.Valid;
+import tools.jackson.core.ObjectReadContext.Base;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
 
 @RestController
 @RequestMapping("/api/students")
-public class StudentController {
+public class StudentController  {
     
     private final StudentService service;
 
@@ -40,50 +47,38 @@ public class StudentController {
 
 
     @PostMapping
-    public ResponseEntity<?> createStudent(@RequestBody CreateStudentRequest st) {
-           System.out.println("active = " + st.isActive());
-        try {
-            StudentDetailResponse savedStudent = service.createStudent(st);
-            URI uri = URI.create("/api/students/" + savedStudent.getId());
-            return ResponseEntity.created(uri).body(savedStudent);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(409).body(e.getMessage());
-        }
+    public ResponseEntity<StudentDetailResponse> createStudent(@Valid @RequestBody CreateStudentRequest st) {
+        StudentDetailResponse savedStudent = service.createStudent(st);
+        URI uri = URI.create("/api/students/" + savedStudent.getId());
+        return ResponseEntity.created(uri).body(savedStudent);
     }
     
     @GetMapping
-    public ResponseEntity<List<StudentSummaryResponse>> getAllStudents() {
-        return ResponseEntity.ok(service.getAllStudents());
+    public ResponseEntity<PageResponse<StudentSummaryResponse>> getAllStudents(
+            @PageableDefault(page = 0, size = 3, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(service.getAllStudents(pageable));
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStudentById(@PathVariable long id) {
-        return service.getStudentById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<StudentDetailResponse> getStudentById(@PathVariable long id) {
+        return ResponseEntity.ok(service.getStudentById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable long id, @RequestBody UpdateStudentRequest st) {
-        try {
-            return ResponseEntity.ok(service.updateStudent(id, st));
-        } catch (RuntimeException e) {
-            HttpStatus status = e.getMessage().contains("not found") ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
-            return ResponseEntity.status(status).body(e.getMessage());
-        }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<StudentDetailResponse> updateStudent(@PathVariable long id, @Valid @RequestBody UpdateStudentRequest st) {
+        return ResponseEntity.ok(service.updateStudent(id, st));
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable long id) {
-        if (service.deleteStudent(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> deleteStudent(@PathVariable long id) {
+        service.deleteStudent(id);
+        return ResponseEntity.noContent().build();
     }
     
     @GetMapping("gpa-above-average")
-    public ResponseEntity<List<StudentSummaryResponse>> getStudentsWithGpaGreaterThanAverage() {
-        return ResponseEntity.ok(service.findStudentsWithGpaGreaterThanAverage());
+    public ResponseEntity<PageResponse<StudentSummaryResponse>> getStudentsWithGpaGreaterThanAverage(@PageableDefault(page = 0, size = 3) Pageable pageable) {
+        return ResponseEntity.ok(service.findStudentsWithGpaGreaterThanAverage(pageable));
     }
 
     @GetMapping("/count-active")
@@ -92,14 +87,29 @@ public class StudentController {
     }
     
     @GetMapping("/recent")
-    public ResponseEntity<List<StudentSummaryResponse>> getStudentsCreatedInLast7Days() {
-        return ResponseEntity.ok(service.findStudentsCreatedInLast7Day());
+    public ResponseEntity<PageResponse<StudentSummaryResponse>> getStudentsCreatedInLast7Days(@PageableDefault(page = 0, size = 3) Pageable pageable) {
+        return ResponseEntity.ok(service.findStudentsCreatedInLast7Day(pageable));
     }
     
 
-        @GetMapping("/test")
+    // tìm sv có tên trong keyword
+    @GetMapping("/keyword")
+    public ResponseEntity<PageResponse<StudentSummaryResponse>> searchStudentByName(
+            @RequestParam String keyword,
+            @PageableDefault(page = 0, size = 3) Pageable pageable) {
+        return ResponseEntity.ok(service.searchStudentByName(keyword, pageable));
+    }
+
+    @GetMapping("/top-gpa")
+    public ResponseEntity<PageResponse<StudentSummaryResponse>> getTopStudentsByGpa(
+            @PageableDefault(page = 0, size = 3, sort = "gpa", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(service.getTopStudentsByGpa(pageable));
+    }
+    
+
+    @GetMapping("/test")
     public String test() {
         return "ok";
-}
+    }
     
 }

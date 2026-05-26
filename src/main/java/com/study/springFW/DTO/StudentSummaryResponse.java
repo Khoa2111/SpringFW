@@ -1,4 +1,4 @@
-package com.study.springFW.DTO;
+package com.study.springFW.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -8,16 +8,9 @@ public class StudentSummaryResponse {
     private long id;
     private String name;
     private String email;
+    private double gpa;
     
-    //cons
-    public StudentSummaryResponse() {
-    }
-
-    public StudentSummaryResponse(long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
+    // không cần cons, chỉ cần getters và setters
     
     //getters
     public long getId() {
@@ -30,6 +23,9 @@ public class StudentSummaryResponse {
     public String getEmail() {
         return email;
     }
+    public double getGpa() {
+        return gpa;
+    }
     
     //setters
     public void setId(long id) {
@@ -40,5 +36,8 @@ public class StudentSummaryResponse {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setGpa(double gpa) {
+        this.gpa = gpa;
     }
 }
